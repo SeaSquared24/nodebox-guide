@@ -26,7 +26,7 @@ Find the boot section and change the boot order to boot from usb first. Save and
 
 Read all of the prompts. Select your keyboard, timezone, etc as normal. At some point you'll be asked what to name the computer, call it nodebox. DO NOT activate root. Skip that one and then enter your name as satoshi and leave the username on the next page as satoshi as well. You can make the password satoshi as well for ease of finishing this guide and then change the password to something stronger when done. Do not install any non-free software, that's mostly just to get Wifi drivers working and we don't need them.
 
-Near the end, there should be a section on Desktop Environment. Since we are doing this as a server, we won't need one. Deselect debian desktop environment, Gnome, and any other environments. Make sure that SSH is selected.
+Near the end, there should be a section on Desktop Environment. Since we are doing this as a server, we won't need one. Deselect debian desktop environment, Gnome, and any other environments. Deselect SSH server. We're going to be using Cockpit instead.
 
 To finish, it will ask how you want to do the install and you will select Use Entire Disk. Don't worry about LVM or any of the other options. Just do the normal Use Entire Disk. Wait for that to complete. 
 
@@ -40,6 +40,26 @@ Login by typing satoshi as your username and whatever your password was. Bring t
 sudo apt update && sudo apt upgrade -y
 
 sudo apt install avahi-daemon cockpit
+```
+
+## Add self-signed certificates to cockpit to encrypt your sessions when using it
+
+```
+# Make a directory to stash all our certs in.
+mkdir certs
+
+cd certs/
+
+# Create the cert files.
+openssl req -new -newkey rsa:2048 -nodes -keyout cockpit.key -out cockpit.csr
+
+# Add those certs to cockpit config.
+sudo bash -c 'cat server.crt ca.crt cockpit.key \
+  > /etc/cockpit/ws-certs.d/10-internal-ca.cert'
+
+# Reload cockpit to apply changes.
+sudo systemctl restart cockpit
+
 ```
 
 Type `exit` and hit Enter to log out.
