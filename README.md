@@ -42,26 +42,6 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install avahi-daemon cockpit
 ```
 
-## Add self-signed certificates to cockpit to encrypt your sessions when using it
-
-```
-# Make a directory to stash all our certs in.
-mkdir certs
-
-cd certs/
-
-# Create the cert files.
-openssl req -new -newkey rsa:2048 -nodes -keyout cockpit.key -out cockpit.csr
-
-# Add those certs to cockpit config.
-sudo bash -c 'cat server.crt ca.crt cockpit.key \
-  > /etc/cockpit/ws-certs.d/10-internal-ca.cert'
-
-# Reload cockpit to apply changes.
-sudo systemctl restart cockpit
-
-```
-
 Type `exit` and hit Enter to log out.
 
 When done, you may remove the keyboard and display and plug the box in wherever it needs to be in your house (as long as the ethernet cable can reach ;) ).
