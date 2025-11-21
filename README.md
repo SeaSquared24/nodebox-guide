@@ -72,4 +72,27 @@ Cockpit runs on port 9090 and avahi-daemon broadcasts the name of the device to 
 
 # Install Bitcoin Core using script
 
-TODO
+Open the [Install Script](/main/bitcoin-install.sh). Click the Copy button at the top which is next to the button that saws RAW. Return to your tab with the nodebox cockpit open and in the terminal do this:
+```
+# return to home directory if you hadn't already.
+cd
+
+# create and edit the script.
+nano bitcoin-install.sh
+```
+
+Right-click and Paste the script you copied from the github page.
+
+Press CTRL+X, then press Y to Save, and then press Enter. You now have the script saved in the home folder. Make it executable and run it.
+```
+# make the script executable.
+chmod +x bitcoin-install.sh
+
+# runs in a detached manner so you can log out of the terminal while this goes on. IBD takes most of a day or more as of 2025.
+sudo nohup ./bitcoin-install-tor-only-after-ibd.sh > ~/bitcoin-install.log 2>&1 &
+
+# Use tail to watch the logfile as the script is running. CTRL+C to cancel.
+tail -f ~/bitcoin-install.log
+
+```
+
