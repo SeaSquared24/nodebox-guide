@@ -72,7 +72,7 @@ Cockpit runs on port 9090 and avahi-daemon broadcasts the name of the device to 
 
 # Install Bitcoin Core using script
 
-Open the [Install Script](/main/bitcoin-install.sh). Click the Copy button at the top which is next to the button that saws RAW. Return to your tab with the nodebox cockpit open and in the terminal do this:
+Open the [Install Script](bitcoin-install.sh). Click the Copy button at the top which is next to the button that saws RAW. Return to your tab with the nodebox cockpit open and in the terminal do this:
 ```
 # return to home directory if you hadn't already.
 cd
