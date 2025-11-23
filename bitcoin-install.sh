@@ -84,8 +84,32 @@ curl -fLO "$CHECKSUM_URL" || error_exit "Failed to download $CHECKSUM_FILE"
 curl -fLO "$SIGNATURE_URL" || error_exit "Failed to download $SIGNATURE_FILE"
 
 # Verify signature and checksum
-log "Verifying GPG signature of checksum file"
-gpg --verify "$SIGNATURE_FILE" "$CHECKSUM_FILE" || error_exit "GPG verification failed"
+# Step: verify the signature  
+log "Verifying GPG signature of checksum file"  
+if ! gpg --verify "$SIGNATURE_FILE" "$CHECKSUM_FILE" 2>&1 | tee gpg_verify.log; then  
+    error_exit "GPG signature verification failed"  
+fi  
+
+# Extract the list of *signer key IDs* that made a **good signature**  
+VALID_SIG_KEYS=$(grep -E 'Good signature from' gpg_verify.log | \
+    sed -E 's/.*key ID ([A-Fa-f0-9]+).*/\1/' | tr 'a-f' 'A-F' | sort -u)  
+
+if [ -z "$VALID_SIG_KEYS" ]; then  
+    error_exit "No valid signatures found."  
+fi  
+
+log "Signer key IDs with good signatures: $VALID_SIG_KEYS"  
+
+# Now verify that **each trusted key** signed the file  
+for trusted in "${TRUSTED_KEYS[@]}"; do  
+    # Normalize to uppercase hex (GPG output is uppercase)  
+    trusted_upper=$(echo "$trusted" | tr 'a-f' 'A-F')  
+    if ! echo "$VALID_SIG_KEYS" | grep -q "$trusted_upper"; then  
+        error_exit "Trusted key $trusted did NOT sign the checksum!"  
+    fi  
+done  
+
+log "All trusted keys successfully signed the checksum. Continuing…" 
 
 log "Verifying tarball checksum"
 grep "$TARBALL" "$CHECKSUM_FILE" | sha256sum --check --ignore-missing || error_exit "Checksum verification failed"
